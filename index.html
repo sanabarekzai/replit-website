@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - My Website</title>
+    <title>Home - Sana Barekzai</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Welcome to My Website</h1>
+        <h1>Sana Barekzai</h1>
         <nav>
             <ul>
-                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html" class="active">Home</a></li>
                 <li><a href="media.html">Media</a></li>
                 <li><a href="future.html">Future</a></li>
                 <li><a href="choice1.html">Choice 1</a></li>
@@ -22,14 +22,64 @@
     </header>
     
     <main>
-        <section>
+        <section class="hero">
+            <h2>Welcome to My Personal Website</h2>
+            <p class="tagline">A high school student exploring web development</p>
+        </section>
+        
+        <section class="about">
             <h2>About Me</h2>
-            <p>This is the home page of my website. Here you can learn more about me and my projects.</p>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Hello! I'm Sana Barekzai, a high school student passionate about learning web development. This is my first website project, built as part of my web development class.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                </div>
+                <div class="about-image">
+                    <img src="assets/images/placeholder-profile.jpg" alt="Placeholder profile image - Sana Barekzai" onerror="this.src='https://via.placeholder.com/300x300/E8D8B3/FCA590?text=Profile+Image'">
+                </div>
+            </div>
+        </section>
+        
+        <section class="contact">
+            <h2>Contact Me</h2>
+            <form id="contactForm" action="/submit-contact" method="POST">
+                <div class="form-group">
+                    <label for="name">Your Name:</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Your Email:</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Subject:</label>
+                    <input type="text" id="subject" name="subject" required placeholder="Enter subject">
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" rows="5" required placeholder="Enter your message here..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn-submit">Send Message</button>
+            </form>
+            <div id="formMessage"></div>
         </section>
     </main>
     
     <footer>
-        <p>&copy; 2024 My Website. All rights reserved.</p>
+        <p>&copy; 2024 Sana Barekzai. All rights reserved.</p>
+        <div class="social-links">
+            <p>Connect with me:</p>
+            <div class="social-icons">
+                <a href="#" class="social-icon" title="Social Media 1">[Icon]</a>
+                <a href="#" class="social-icon" title="Social Media 2">[Icon]</a>
+                <a href="#" class="social-icon" title="Social Media 3">[Icon]</a>
+            </div>
+        </div>
     </footer>
     
     <script src="script.js"></script>
