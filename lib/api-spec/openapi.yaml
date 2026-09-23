@@ -1,0 +1,262 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: contact
+    description: Public contact form operations
+  - name: admin
+    description: Protected contact administration operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /contact:
+    post:
+      operationId: createContactSubmission
+      tags: [contact]
+      summary: Submit a contact message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactSubmissionInput"
+      responses:
+        "201":
+          description: Contact message saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactSubmission"
+        "400":
+          description: Invalid contact message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Storage failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Authenticate the admin dashboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginInput"
+      responses:
+        "200":
+          description: Admin authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminLoginResult"
+        "401":
+          description: Invalid admin password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /admin/messages:
+    get:
+      operationId: getAdminMessages
+      tags: [admin]
+      summary: List all contact messages
+      security:
+        - adminSession: []
+      responses:
+        "200":
+          description: Contact messages, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContactSubmission"
+        "401":
+          description: Admin authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /admin/messages/{id}/replied:
+    patch:
+      operationId: markAdminMessageReplied
+      tags: [admin]
+      summary: Mark a contact message as replied
+      security:
+        - adminSession: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated contact message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactSubmission"
+        "401":
+          description: Admin authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Message not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /admin/summary:
+    get:
+      operationId: getAdminSummary
+      tags: [admin]
+      summary: Summarize contact message activity
+      security:
+        - adminSession: []
+      responses:
+        "200":
+          description: Current dashboard summary and reason breakdown
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSummary"
+        "401":
+          description: Admin authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  securitySchemes:
+    adminSession:
+      type: apiKey
+      in: cookie
+      name: admin_session
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    ContactSubmissionInput:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+        reason:
+          type: string
+          enum: [Comment, Question, Partnership, Opportunity, Other]
+        message:
+          type: string
+          minLength: 1
+      required: [firstName, lastName, email, reason, message]
+    ContactSubmission:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        reason:
+          type: string
+          enum: [Comment, Question, Partnership, Opportunity, Other]
+        message:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+        replied:
+          type: boolean
+        repliedAt:
+          type: ["string", "null"]
+          format: date-time
+      required: [id, firstName, lastName, email, reason, message, submittedAt, replied, repliedAt]
+    AdminLoginInput:
+      type: object
+      properties:
+        password:
+          type: string
+          minLength: 1
+      required: [password]
+    AdminLoginResult:
+      type: object
+      properties:
+        authenticated:
+          type: boolean
+      required: [authenticated]
+    ReasonCount:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum: [Comment, Question, Partnership, Opportunity, Other]
+        count:
+          type: integer
+      required: [reason, count]
+    AdminSummary:
+      type: object
+      properties:
+        totalMessages:
+          type: integer
+        newMessages:
+          type: integer
+        repliedMessages:
+          type: integer
+        replyRate:
+          type: number
+        byReason:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReasonCount"
+      required: [totalMessages, newMessages, repliedMessages, replyRate, byReason]
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
